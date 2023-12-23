@@ -1,4 +1,4 @@
-package boku.infra;
+package boku.infra.command;
 
 public interface Command<Response> {
 

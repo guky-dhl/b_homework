@@ -1,4 +1,4 @@
-package boku.infra;
+package boku.infra.command;
 
 import java.util.HashMap;
 

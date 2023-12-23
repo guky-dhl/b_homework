@@ -1,4 +1,4 @@
-package boku.infra;
+package boku.infra.command;
 
 public class MissingHandler extends IllegalArgumentException{
     public <R> MissingHandler(Command<R> c){

@@ -1,4 +1,4 @@
-package boku.infra;
+package boku.infra.command;
 
 import org.junit.jupiter.api.Test;
 
@@ -22,13 +22,13 @@ class SimpleCommandHandlerTest {
     void should_throw_missing_command_when_no_handler_provided() {
         final var subject = new SimpleCommandHandler();
 
-        final var exception =  assertThrows(MissingHandler.class, () -> {
+        final var exception = assertThrows(MissingHandler.class, () -> {
             subject.handle(command);
         });
         assertTrue(exception.getMessage().contains(TestCommand.class.toString()));
     }
 
-    static class TestCommand implements Command<String>{
+    static class TestCommand implements Command<String> {
         final String result;
 
         TestCommand(String result) {
@@ -36,7 +36,7 @@ class SimpleCommandHandlerTest {
         }
     }
 
-    static class TestCommandHandler implements Command.Handler<TestCommand, String>{
+    static class TestCommandHandler implements Command.Handler<TestCommand, String> {
 
         @Override
         public String handle(TestCommand command) {
