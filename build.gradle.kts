@@ -1,9 +1,18 @@
 plugins {
     id("java")
+    application
 }
 
 group = "boku"
 version = "1.0-SNAPSHOT"
+
+
+
+application {
+    mainClass = "boku.App"
+}
+
+
 
 repositories {
     mavenCentral()
