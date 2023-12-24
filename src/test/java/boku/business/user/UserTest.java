@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserTest {
 
+    private final Transactions transactions = new Transactions();
+
     @Test
     void should_be_equals_two_users_with_same_id() {
         var user1 = new User(new User.UserId());
@@ -23,7 +25,7 @@ class UserTest {
         var subject = new User(new User.UserId());
         var deposit = Transaction.deposit(subject.id, depositAmount);
 
-        subject.apply(deposit);
+        subject.apply(deposit, transactions);
 
         assertEquals(subject.balance(), new Balance(depositAmount, BigDecimal.ZERO));
     }
@@ -34,7 +36,7 @@ class UserTest {
         var subject = new User(new User.UserId());
         var transfer = Transaction.transfer(subject.id, transferAmount);
 
-        subject.apply(transfer);
+        subject.apply(transfer, transactions);
 
         assertEquals(subject.balance(), new Balance(transferAmount, BigDecimal.ZERO));
     }
@@ -45,9 +47,9 @@ class UserTest {
         var subject = new User(new User.UserId());
         var deposit = Transaction.deposit(subject.id, transferAmount);
         var transfer = Transaction.transfer(subject.id, transferAmount.negate());
-        subject.apply(deposit);
+        subject.apply(deposit, transactions);
 
-        subject.apply(transfer);
+        subject.apply(transfer, transactions);
 
         assertEquals(subject.balance(), new Balance(BigDecimal.ZERO, BigDecimal.ZERO));
     }
@@ -59,9 +61,9 @@ class UserTest {
         var deposit = Transaction.deposit(subject.id, transferAmount);
         var address = new WithdrawalService.Address("abc");
         var withdrawal = Transaction.withdrawal(subject.id, transferAmount, address);
-        subject.apply(deposit);
+        subject.apply(deposit, transactions);
 
-        subject.apply(withdrawal);
+        subject.apply(withdrawal, transactions);
 
         assertEquals(subject.balance(), new Balance(BigDecimal.ZERO, transferAmount));
     }
@@ -73,10 +75,10 @@ class UserTest {
         var deposit = Transaction.deposit(subject.id, transferAmount);
         var address = new WithdrawalService.Address("abc");
         var withdrawal = Transaction.withdrawal(subject.id, transferAmount, address);
-        subject.apply(deposit);
-        subject.apply(withdrawal);
+        subject.apply(deposit, transactions);
+        subject.apply(withdrawal, transactions);
 
-        subject.apply(withdrawal.complete_withdrawal());
+        subject.apply(withdrawal.complete_withdrawal(), transactions);
 
         assertEquals(subject.balance(), new Balance(BigDecimal.ZERO, BigDecimal.ZERO));
     }
@@ -88,10 +90,10 @@ class UserTest {
         var deposit = Transaction.deposit(subject.id, transferAmount);
         var address = new WithdrawalService.Address("abc");
         var withdrawal = Transaction.withdrawal(subject.id, transferAmount, address);
-        subject.apply(deposit);
-        subject.apply(withdrawal);
+        subject.apply(deposit, transactions);
+        subject.apply(withdrawal, transactions);
 
-        subject.apply(withdrawal.fail_withdrawal());
+        subject.apply(withdrawal.fail_withdrawal(), transactions);
 
         assertEquals(subject.balance(), new Balance(transferAmount, BigDecimal.ZERO));
     }
@@ -102,8 +104,19 @@ class UserTest {
         var subject = new User(new User.UserId());
         var deposit = Transaction.deposit(new User.UserId(), transferAmount);
 
-        assertThrows(User.UnrelatedTransaction.class, () -> subject.apply(deposit));
+        assertThrows(User.UnrelatedTransaction.class, () -> subject.apply(deposit, transactions));
 
+    }
+
+    @Test
+    void should_store_transaction() {
+        var depositAmount = BigDecimal.TEN;
+        var subject = new User(new User.UserId());
+        var deposit = Transaction.deposit(subject.id, depositAmount);
+
+        subject.apply(deposit, transactions);
+
+        assertTrue(transactions.get(deposit.id).isPresent());
     }
 
 }

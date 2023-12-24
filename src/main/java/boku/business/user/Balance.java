@@ -29,6 +29,10 @@ public record Balance(BigDecimal free, BigDecimal frozen) {
         return new Balance(free.add(amount), this.frozen.subtract(amount));
     }
 
+    public boolean is_sufficient(BigDecimal amount) {
+        return this.free.compareTo(amount) >= 0;
+    }
+
     public Balance release(BigDecimal amount) {
         return new Balance(free, this.frozen.subtract(amount));
     }

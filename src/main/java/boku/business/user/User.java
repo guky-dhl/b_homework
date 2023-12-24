@@ -10,7 +10,7 @@ public class User extends Entity<User.UserId> {
         super(id);
     }
 
-    public void apply(Transaction transaction) {
+    public void apply(Transaction transaction, Transactions transactions) {
         if (!transaction.userId.equals(id)) {
             throw new UnrelatedTransaction(this, transaction);
         }
@@ -20,6 +20,7 @@ public class User extends Entity<User.UserId> {
             case WITHDRAWAL_DONE -> this.balance = balance.release(transaction.amount);
             case WITHDRAWAL_FAILED -> this.balance = balance.unfreeze(transaction.amount);
         }
+        transactions.save(transaction);
     }
 
     public Balance balance() {
