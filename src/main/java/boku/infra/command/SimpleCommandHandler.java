@@ -1,19 +1,32 @@
 package boku.infra.command;
 
-import java.util.HashMap;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Singleton
 public class SimpleCommandHandler implements CommandHandler {
-    private final HashMap<Class<?>, Command.Handler<?, ?>> handlers;
+    private final Map<Class<?>, Command.Handler<?, ?>> handlers;
 
     public SimpleCommandHandler() {
         this.handlers = new HashMap<>();
     }
 
-    public <R, C extends Command<R>> void add(Command.Handler<C, R> handler){
+    @Inject
+    public SimpleCommandHandler(Set<Command.Handler<?, ?>> commands) {
+        this.handlers = commands.stream().collect(Collectors.toMap(Command.Handler::command_class, (it) -> it));
+    }
+
+
+    public <R, C extends Command<R>> void add(Command.Handler<C, R> handler) {
         this.handlers.put(handler.command_class(), handler);
     }
 
-    public <R, C extends Command<R>> R handle(C command){
+    public <R, C extends Command<R>> R handle(C command) {
         @SuppressWarnings("unchecked")
         Command.Handler<C, R> handler = (Command.Handler<C, R>) this.handlers.get(command.getClass());
         if (handler == null) {
