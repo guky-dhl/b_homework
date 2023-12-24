@@ -36,7 +36,7 @@ public class SimpleJobService implements JobService {
                     throw new RuntimeException(e);
                 }
             }
-        });
+        }).start();
     }
 
     void processNext() {

@@ -13,6 +13,8 @@ import boku.infra.command.CommandHandler;
 import boku.infra.command.SimpleCommandHandler;
 import boku.infra.job.JobService;
 import boku.infra.job.SimpleJobService;
+import boku.infra.persistance.EntityNotFound;
+import boku.infra.rest.Error;
 import boku.infra.rest.RestUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,6 +41,7 @@ public class App {
         var commandHandler = injector.getInstance(CommandHandler.class);
 
         var app = Javalin.create(App::initGson);
+        mapErrors(app);
         RestUtils.registerCommandHandler(app, commandHandler);
 
         WithdrawalApi.register(app);
@@ -48,7 +51,7 @@ public class App {
         return app;
     }
 
-    public static void initGson(JavalinConfig config) {
+    static void initGson(JavalinConfig config) {
         Gson gson = new GsonBuilder().create();
         JsonMapper gsonMapper = new JsonMapper() {
 
@@ -66,6 +69,20 @@ public class App {
         };
         config.jsonMapper(gsonMapper);
     }
+
+    static void mapErrors(Javalin app) {
+        app.exception(EntityNotFound.class, (e, ctx) -> {
+            ctx.status(404);
+            ctx.json(new Error(e.getMessage()));
+        }).exception(IllegalArgumentException.class, (e, ctx) -> {
+            ctx.status(400);
+            ctx.json(new Error(e.getMessage()));
+        }).exception(Exception.class, (e, ctx) -> {
+            ctx.status(500);
+            ctx.json(new Error(e.getMessage()));
+        });
+    }
+
 
     public static class AppModule extends AbstractModule {
         public void configure() {
