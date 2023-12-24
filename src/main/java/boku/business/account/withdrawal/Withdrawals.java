@@ -2,11 +2,13 @@ package boku.business.account.withdrawal;
 
 import boku.business.account.user.User;
 import boku.infra.persistance.BasicRepository;
+import com.google.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Singleton
 public class Withdrawals extends BasicRepository<Withdrawal.WithdrawalId, Withdrawal> {
     private final ConcurrentHashMap<User.UserId, List<Withdrawal>> withdrawalsByUser = new ConcurrentHashMap<>();
 

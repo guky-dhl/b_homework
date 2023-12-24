@@ -16,7 +16,8 @@ import java.time.Clock;
 import static boku.business.account.withdrawal.WithdrawalService.WithdrawalState.COMPLETED;
 
 
-public record UpdateWithdrawalState(User user, Transaction request_transaction,
+public record UpdateWithdrawalState(User user,
+                                    Transaction request_transaction,
                                     Withdrawal withdrawal) implements Command<Voidy> {
     public static class Handler implements Command.Handler<UpdateWithdrawalState, Voidy> {
 

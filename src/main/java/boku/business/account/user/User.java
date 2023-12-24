@@ -6,6 +6,7 @@ import boku.infra.persistance.Id;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class User extends Entity<User.UserId> {
     private final Set<WithdrawalService.Address> addresses = new HashSet<>();
@@ -45,6 +46,13 @@ public class User extends Entity<User.UserId> {
     }
 
     public static final class UserId extends Id {
+        public UserId(UUID userId) {
+            super(userId);
+        }
+
+        public UserId() {
+            super();
+        }
     }
 
     public static class UnrelatedTransaction extends IllegalArgumentException {

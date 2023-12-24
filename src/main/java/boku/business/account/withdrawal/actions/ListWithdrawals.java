@@ -11,7 +11,7 @@ import com.google.inject.Inject;
 
 import java.util.List;
 
-public record ListWithdrawals(User.UserId userId, int page, int per_page) implements Command<ListWithdrawals.Result> {
+public record ListWithdrawals(User.UserId userId, int page, int perPage) implements Command<ListWithdrawals.Result> {
 
     public record WithdrawalRecord(WithdrawalId id, Address address, WithdrawalState state, Timestamp timestamp) {
     }
@@ -31,8 +31,8 @@ public record ListWithdrawals(User.UserId userId, int page, int per_page) implem
         @Override
         public Result handle(ListWithdrawals command) {
             var total = withdrawals.countByUserId(command.userId);
-            var last = command.page * (command.per_page - 1);
-            var result = withdrawals.byUserId(command.userId, last, command.per_page)
+            var last = (command.page - 1) * command.perPage;
+            var result = withdrawals.byUserId(command.userId, last, command.perPage)
                     .stream()
                     .map((it) -> new WithdrawalRecord(it.id, it.address, it.state(), it.completedAt()))
                     .toList();

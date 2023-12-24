@@ -15,7 +15,10 @@ import com.google.inject.Inject;
 import java.math.BigDecimal;
 import java.time.Clock;
 
-public record Withdraw(User.UserId user, WithdrawalService.Address address,
+
+public record Withdraw(User.UserId user,
+                       WithdrawalService.Address address,
+
                        BigDecimal amount) implements Command<Withdraw.Result> {
 
     public record Result(Withdrawal.WithdrawalId id) {

@@ -19,4 +19,8 @@ public class Entity<T extends Id> {
         return this.id.equals(e.id);
     }
 
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }
