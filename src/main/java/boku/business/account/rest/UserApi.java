@@ -5,7 +5,7 @@ import boku.infra.rest.RestUtils;
 import io.javalin.Javalin;
 
 public interface UserApi {
-    public static final String PATH = "/transfer";
+    String PATH = "/transfer";
 
     static Javalin register(Javalin javalin) {
         return javalin.put(PATH, ctx -> {

@@ -5,7 +5,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 public interface RestUtils {
-    static final String COMMAND_HANDLER = "command_handler";
+    String COMMAND_HANDLER = "command_handler";
 
     static CommandHandler getCommandHandler(Context context) {
         return context.attribute(COMMAND_HANDLER);
