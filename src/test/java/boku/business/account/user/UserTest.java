@@ -1,6 +1,6 @@
-package boku.business.user;
+package boku.business.account.user;
 
-import boku.business.withdrawal.WithdrawalService;
+import boku.business.account.withdrawal.Withdrawal;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -59,8 +59,7 @@ class UserTest {
         var transferAmount = BigDecimal.TEN;
         var subject = new User(new User.UserId());
         var deposit = Transaction.deposit(subject.id, transferAmount);
-        var address = new WithdrawalService.Address("abc");
-        var withdrawal = Transaction.withdrawal(subject.id, transferAmount, address);
+        var withdrawal = Transaction.withdrawal(subject.id, transferAmount, new Withdrawal.WithdrawalId());
         subject.apply(deposit, transactions);
 
         subject.apply(withdrawal, transactions);
@@ -73,8 +72,7 @@ class UserTest {
         var transferAmount = BigDecimal.TEN;
         var subject = new User(new User.UserId());
         var deposit = Transaction.deposit(subject.id, transferAmount);
-        var address = new WithdrawalService.Address("abc");
-        var withdrawal = Transaction.withdrawal(subject.id, transferAmount, address);
+        var withdrawal = Transaction.withdrawal(subject.id, transferAmount, new Withdrawal.WithdrawalId());
         subject.apply(deposit, transactions);
         subject.apply(withdrawal, transactions);
 
@@ -88,8 +86,7 @@ class UserTest {
         var transferAmount = BigDecimal.TEN;
         var subject = new User(new User.UserId());
         var deposit = Transaction.deposit(subject.id, transferAmount);
-        var address = new WithdrawalService.Address("abc");
-        var withdrawal = Transaction.withdrawal(subject.id, transferAmount, address);
+        var withdrawal = Transaction.withdrawal(subject.id, transferAmount, new Withdrawal.WithdrawalId());
         subject.apply(deposit, transactions);
         subject.apply(withdrawal, transactions);
 
@@ -116,7 +113,7 @@ class UserTest {
 
         subject.apply(deposit, transactions);
 
-        assertTrue(transactions.get(deposit.id).isPresent());
+        assertTrue(transactions.find(deposit.id).isPresent());
     }
 
 }

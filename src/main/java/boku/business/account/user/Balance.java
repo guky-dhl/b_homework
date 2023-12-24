@@ -1,16 +1,16 @@
-package boku.business.user;
+package boku.business.account.user;
 
 import java.math.BigDecimal;
 
 public record Balance(BigDecimal free, BigDecimal frozen) {
-    public static Balance zero() {
-        return new Balance(BigDecimal.ZERO, BigDecimal.ZERO);
-    }
-
     public Balance {
         if (free.compareTo(BigDecimal.ZERO) <= -1 || frozen.compareTo(BigDecimal.ZERO) <= -1) {
-            throw new NegativeBalance(free, frozen);
+            throw new LowBalance(free, frozen);
         }
+    }
+
+    public static Balance zero() {
+        return new Balance(BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
     public Balance add(BigDecimal amount) {
@@ -29,10 +29,6 @@ public record Balance(BigDecimal free, BigDecimal frozen) {
         return new Balance(free.add(amount), this.frozen.subtract(amount));
     }
 
-    public boolean is_sufficient(BigDecimal amount) {
-        return this.free.compareTo(amount) >= 0;
-    }
-
     public Balance release(BigDecimal amount) {
         return new Balance(free, this.frozen.subtract(amount));
     }
@@ -46,8 +42,8 @@ public record Balance(BigDecimal free, BigDecimal frozen) {
         return this.free.compareTo(balance.free) == 0 && this.frozen.compareTo(balance.frozen) == 0;
     }
 
-    public static final class NegativeBalance extends IllegalStateException {
-        public NegativeBalance(BigDecimal free, BigDecimal frozen) {
+    public static final class LowBalance extends IllegalStateException {
+        public LowBalance(BigDecimal free, BigDecimal frozen) {
             super("Balance can't be negative free:[%s] frozen:[%s]".formatted(free, frozen));
         }
     }

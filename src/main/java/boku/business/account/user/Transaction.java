@@ -1,6 +1,6 @@
-package boku.business.user;
+package boku.business.account.user;
 
-import boku.business.withdrawal.WithdrawalService;
+import boku.business.account.withdrawal.Withdrawal;
 import boku.infra.persistance.Entity;
 import boku.infra.persistance.Id;
 
@@ -12,52 +12,52 @@ public class Transaction extends Entity<Transaction.TransactionId> {
     public final BigDecimal amount;
     public final Type type;
     public final User.UserId userId;
-    public final Optional<WithdrawalService.Address> address;
-
-    public static Transaction deposit(User.UserId userId, BigDecimal amount) {
-        return new Transaction(amount, Type.DEPOSIT, userId);
-    }
-
-    public static Transaction withdrawal(User.UserId userId, BigDecimal amount, WithdrawalService.Address address) {
-        return new Transaction(amount, Type.WITHDRAWAL_REQUESTED, userId, address);
-    }
-
-    public static Transaction transfer(User.UserId userId, BigDecimal amount) {
-        return new Transaction(amount, Type.TRANSFER, userId);
-    }
+    public final Optional<Withdrawal.WithdrawalId> withdrawalId;
 
     Transaction(BigDecimal amount, Type type, User.UserId userId) {
         super(new TransactionId());
         this.amount = amount;
         this.type = type;
         this.userId = userId;
-        this.address = Optional.empty();
+        this.withdrawalId = Optional.empty();
     }
 
-    Transaction(BigDecimal amount, Type type, User.UserId userId, WithdrawalService.Address address) {
+    Transaction(BigDecimal amount, Type type, User.UserId userId, Withdrawal.WithdrawalId withdrawalId) {
         super(new TransactionId());
         this.amount = amount;
         this.type = type;
         this.userId = userId;
-        this.address = Optional.of(address);
+        this.withdrawalId = Optional.ofNullable(withdrawalId);
+    }
+
+    public static Transaction deposit(User.UserId userId, BigDecimal amount) {
+        return new Transaction(amount, Type.DEPOSIT, userId);
+    }
+
+    public static Transaction withdrawal(User.UserId userId, BigDecimal amount, Withdrawal.WithdrawalId withdrawalId) {
+        return new Transaction(amount, Type.WITHDRAWAL_REQUESTED, userId, withdrawalId);
+    }
+
+    public static Transaction transfer(User.UserId userId, BigDecimal amount) {
+        return new Transaction(amount, Type.TRANSFER, userId);
     }
 
     public Transaction complete_withdrawal() {
         validate_withdrawal_transaction();
-        return new Transaction(amount, Type.WITHDRAWAL_DONE, userId, address.get());
+        return new Transaction(amount, Type.WITHDRAWAL_DONE, userId, withdrawalId.get());
     }
 
     public Transaction fail_withdrawal() {
         validate_withdrawal_transaction();
-        return new Transaction(amount, Type.WITHDRAWAL_FAILED, userId, address.get());
+        return new Transaction(amount, Type.WITHDRAWAL_FAILED, userId, withdrawalId.get());
     }
 
     private void validate_withdrawal_transaction() {
         if (this.type != Type.WITHDRAWAL_REQUESTED) {
             throw new InvalidWithdrawalTransactionType(this.type);
         }
-        if (this.address.isEmpty()) {
-            throw new WithdrawalMissingAddress(this.id);
+        if (this.withdrawalId.isEmpty()) {
+            throw new WithdrawalMissing(this.id);
         }
     }
 
@@ -79,8 +79,8 @@ public class Transaction extends Entity<Transaction.TransactionId> {
         }
     }
 
-    public static final class WithdrawalMissingAddress extends IllegalStateException {
-        WithdrawalMissingAddress(Transaction.TransactionId id) {
+    public static final class WithdrawalMissing extends IllegalStateException {
+        WithdrawalMissing(Transaction.TransactionId id) {
             super("Withdrawal transaction [%s] missing address".formatted(id));
         }
     }

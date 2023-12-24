@@ -1,7 +1,9 @@
 package boku;
 
-import boku.business.actions.Transfer;
-import boku.business.user.User;
+import boku.business.account.actions.Transfer;
+import boku.business.account.user.User;
+import boku.business.account.withdrawal.WithdrawalService;
+import boku.business.account.withdrawal.WithdrawalServiceStub;
 import boku.infra.command.Command;
 import boku.infra.command.CommandHandler;
 import boku.infra.command.SimpleCommandHandler;
@@ -30,7 +32,7 @@ public class App {
     public static class AppModule extends AbstractModule {
         public void configure() {
             bind(CommandHandler.class).to(SimpleCommandHandler.class).asEagerSingleton();
-
+            bind(WithdrawalService.class).to(WithdrawalServiceStub.class).asEagerSingleton();
             var commandsBinder = Multibinder.newSetBinder(binder(), new TypeLiteral<Command.Handler<?, ?>>() {
             });
             commandsBinder.addBinding().to(Transfer.Handler.class).asEagerSingleton();

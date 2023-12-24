@@ -22,9 +22,7 @@ class SimpleCommandHandlerTest {
     void should_throw_missing_command_when_no_handler_provided() {
         final var subject = new SimpleCommandHandler();
 
-        final var exception = assertThrows(MissingHandler.class, () -> {
-            subject.handle(command);
-        });
+        final var exception = assertThrows(MissingHandler.class, () -> subject.handle(command));
         assertTrue(exception.getMessage().contains(TestCommand.class.toString()));
     }
 
@@ -44,7 +42,7 @@ class SimpleCommandHandlerTest {
         }
 
         @Override
-        public Class<TestCommand> command_class() {
+        public Class<TestCommand> commandClass() {
             return TestCommand.class;
         }
     }

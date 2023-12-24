@@ -1,11 +1,12 @@
-package boku.business.user;
+package boku.business.account.user;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class BalanceTest {
 
@@ -58,12 +59,12 @@ class BalanceTest {
 
     @Test
     void should_not_allow_free_drop_below_zero() {
-        assertThrows(Balance.NegativeBalance.class, () -> this.subject.subtract(this.subject.free().add(BigDecimal.ONE)));
+        assertThrows(Balance.LowBalance.class, () -> this.subject.subtract(this.subject.free().add(BigDecimal.ONE)));
     }
 
     @Test
     void should_not_allow_frozen_drop_below_zero() {
-        assertThrows(Balance.NegativeBalance.class, () -> this.subject.release(this.subject.frozen().add(BigDecimal.ONE)));
+        assertThrows(Balance.LowBalance.class, () -> this.subject.release(this.subject.frozen().add(BigDecimal.ONE)));
     }
 
 }

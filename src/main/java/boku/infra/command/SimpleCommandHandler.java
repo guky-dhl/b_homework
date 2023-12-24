@@ -18,12 +18,12 @@ public class SimpleCommandHandler implements CommandHandler {
 
     @Inject
     public SimpleCommandHandler(Set<Command.Handler<?, ?>> commands) {
-        this.handlers = commands.stream().collect(Collectors.toMap(Command.Handler::command_class, (it) -> it));
+        this.handlers = commands.stream().collect(Collectors.toMap(Command.Handler::commandClass, (it) -> it));
     }
 
 
     public <R, C extends Command<R>> void add(Command.Handler<C, R> handler) {
-        this.handlers.put(handler.command_class(), handler);
+        this.handlers.put(handler.commandClass(), handler);
     }
 
     public <R, C extends Command<R>> R handle(C command) {
